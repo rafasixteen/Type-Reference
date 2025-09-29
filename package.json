@@ -1,0 +1,13 @@
+﻿{
+  "name": "com.rafasixteen.typereference",
+  "version": "1.0.0",
+  "displayName": "Type Reference",
+  "description": "",
+  "unity": "2023",
+  "keywords": [],
+  "author": {
+    "name": "rafasixteen",
+    "email": "rafaelrego16@gmail.com",
+    "url": "https://github.com/rafasixteen"
+  }
+}

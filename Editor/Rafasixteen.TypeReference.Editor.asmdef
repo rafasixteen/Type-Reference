@@ -1,0 +1,18 @@
+{
+    "name": "Rafasixteen.TypeReference.Editor",
+    "rootNamespace": "Rafasixteen.TypeReference.Editor",
+    "references": [
+        "GUID:40a6c565c52444042974f614ba5a9627"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

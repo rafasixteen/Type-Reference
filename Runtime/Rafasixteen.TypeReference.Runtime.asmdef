@@ -1,0 +1,14 @@
+{
+    "name": "Rafasixteen.TypeReference.Runtime",
+    "rootNamespace": "Rafasixteen.TypeReference.Runtime",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
