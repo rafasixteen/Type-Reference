@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Rafasixteen.TypeReference.Runtime
 {
     [Serializable]
-    public class TypeReference<T> : ISerializationCallbackReceiver, IEquatable<TypeReference<T>>
+    public sealed class TypeReference<T> : ISerializationCallbackReceiver, IEquatable<TypeReference<T>>
     {
         #region FIELDS
 
