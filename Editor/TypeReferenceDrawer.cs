@@ -1,14 +1,17 @@
 using Rafasixteen.TypeReference.Runtime;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace Rafasixteen.TypeReference.Editor
 {
-    [CustomPropertyDrawer(typeof(TypeReference<>), true)]
+    [CustomPropertyDrawer(typeof(TypeReference<>))]
     public class TypeReferenceDrawer : PropertyDrawer
     {
+        private const string TypeFullNameField = "_typeFullName";
+        
         private static Type[] _availableTypes;
 
         private static string[] _typeFullNames;
@@ -17,10 +20,39 @@ namespace Rafasixteen.TypeReference.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            SerializedProperty typeProperty = property.FindPropertyRelative("_typeFullName");
-            Type fieldType = fieldInfo.FieldType.GetGenericArguments().First();
+            SerializedProperty typeNameProperty = property.FindPropertyRelative("_typeFullName");
 
-            _availableTypes = TypeCache.GetTypesDerivedFrom(fieldType)
+            if (typeNameProperty == null)
+            {
+                EditorGUI.HelpBox(
+                    position,
+                    $"{nameof(TypeReferenceDrawer)} Error: Missing serialized field '{TypeFullNameField}' " +
+                    $"in {nameof(TypeReference)}.\n" +
+                    $"Ensure your {nameof(TypeReference)} class defines a [SerializeField] " +
+                    $"string field named '{TypeFullNameField}'.",
+                    MessageType.Error
+                );
+
+                return;
+            }
+
+            Type genericType = GetGenericArgumentType(fieldInfo.FieldType);
+
+            if (genericType == null)
+            {
+                EditorGUI.HelpBox(
+                    position,
+                    $"{nameof(TypeReferenceDrawer)} Error: Unable to determine the generic type parameter " +
+                    $"for field '{fieldInfo.Name}'.\n" +
+                    $"Expected a field of type {nameof(TypeReference)}<T>, " +
+                    $"an array, or a list of it.\n" +
+                    $"Actual type: {fieldInfo.FieldType.FullName}",
+                    MessageType.Error
+                );
+                return;
+            }
+
+            _availableTypes = TypeCache.GetTypesDerivedFrom(genericType)
                 .Where(t => !t.IsAbstract)
                 .OrderBy(t => t.Name)
                 .ToArray();
@@ -46,7 +78,7 @@ namespace Rafasixteen.TypeReference.Editor
 
             EditorGUI.PrefixLabel(labelRect, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            int currentIndex = Array.IndexOf(_typeFullNames, typeProperty.stringValue);
+            int currentIndex = Array.IndexOf(_typeFullNames, typeNameProperty.stringValue);
 
             if (currentIndex < 0)
                 currentIndex = 0;
@@ -54,7 +86,18 @@ namespace Rafasixteen.TypeReference.Editor
             int selectedIndex = EditorGUI.Popup(dropdownRect, currentIndex, _displayNames);
 
             if (selectedIndex != currentIndex)
-                typeProperty.stringValue = _typeFullNames[selectedIndex];
+                typeNameProperty.stringValue = _typeFullNames[selectedIndex];
+        }
+
+        private static Type GetGenericArgumentType(Type type)
+        {
+            if (type.IsArray)
+                type = type.GetElementType();
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(TypeReference<>))
+                return type.GetGenericArguments()[0];
+
+            return null;
         }
     }
 }
